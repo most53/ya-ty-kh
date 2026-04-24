@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Який ти хліб?</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Georgia', serif;
+    background: linear-gradient(135deg, #f4e4c1 0%, #e8c39e 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #3d2817;
+  }
+  .container {
+    background: #fffaf0;
+    max-width: 700px;
+    width: 100%;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(101, 67, 33, 0.25);
+    border: 3px solid #c9a57b;
+  }
+  h1 {
+    text-align: center;
+    font-size: 2.5em;
+    color: #6b3410;
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+  .subtitle {
+    text-align: center;
+    color: #8b6542;
+    margin-bottom: 30px;
+    font-size: 1em;
+  }
+  .progress-bar {
+    background: #e8d5b7;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 25px;
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, #c9a57b, #8b6542);
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .question-number {
+    color: #8b6542;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .question {
+    font-size: 1.4em;
+    margin-bottom: 25px;
+    line-height: 1.4;
+    color: #3d2817;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .option {
+    background: #fff;
+    border: 2px solid #e8d5b7;
+    padding: 16px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.05em;
+    text-align: left;
+    font-family: inherit;
+    color: #3d2817;
+    transition: all 0.2s ease;
+  }
+  .option:hover {
+    background: #fdf4e3;
+    border-color: #c9a57b;
+    transform: translateX(5px);
+  }
+  .result {
+    text-align: center;
+  }
+  .bread-emoji {
+    font-size: 5em;
+    margin-bottom: 15px;
+  }
+  .bread-name {
+    font-size: 2.2em;
+    color: #6b3410;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  .bread-description {
+    font-size: 1.1em;
+    line-height: 1.7;
+    text-align: left;
+    margin-bottom: 20px;
+    color: #3d2817;
+  }
+  .bread-description p {
+    margin-bottom: 15px;
+  }
+  .restart-btn {
+    background: #6b3410;
+    color: #fffaf0;
+    border: none;
+    padding: 14px 32px;
+    font-size: 1em;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 15px;
+    transition: all 0.2s ease;
+  }
+  .restart-btn:hover {
+    background: #8b6542;
+    transform: scale(1.05);
+  }
+  .intro {
+    text-align: center;
+  }
+  .intro p {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    line-height: 1.6;
+  }
+  .start-btn {
+    background: #6b3410;
+    color: #fffaf0;
+    border: none;
+    padding: 16px 40px;
+    font-size: 1.1em;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+  }
+  .start-btn:hover {
+    background: #8b6542;
+    transform: scale(1.05);
+  }
+</style>
+</head>
+<body>
+  <div class="container" id="app"></div>
+
+<script>
+const questions = [
+  {
+    q: "Ви відкриваєте холодильник о 2:47 ночі. Що ви там шукаєте?",
+    options: [
+      { text: "Нічого конкретного. Просто світло заспокоює.", type: "chiabata" },
+      { text: "Сир, якого точно немає, але я перевірю втретє.", type: "bagget" },
+      { text: "Щось, що виправдає цю подорож на кухню.", type: "toast" },
+      { text: "Відповіді на екзистенційні питання.", type: "borodynsky" },
+      { text: "Залишки вчорашньої вечері, щоб поділитись з котом.", type: "pampushka" },
+      { text: "Натхнення. І десерт. Переважно десерт.", type: "focaccia" }
+    ]
+  },
+  {
+    q: "Хтось ставить вам у черзі ногу на п'яту. Ваша реакція?",
+    options: [
+      { text: "Повертаюся з поглядом Шекспіра на четвертому акті.", type: "bagget" },
+      { text: "Делікатно переминаюся, вдаючи, що нічого не сталось.", type: "toast" },
+      { text: "А що, є черга? Я тут просто стою і мрію.", type: "chiabata" },
+      { text: "Починаю розмову про погоду — зблизить нас.", type: "pampushka" },
+      { text: "Записую в ментальний зошит кривд.", type: "borodynsky" },
+      { text: "Роблю вигляд, що це перформанс, і підіграю.", type: "focaccia" }
+    ]
+  },
+  {
+    q: "Оберіть найприємніший звук:",
+    options: [
+      { text: "Клацання запальнички в тиші.", type: "borodynsky" },
+      { text: "Хруст снігу під чиїмись чужими чоботами.", type: "bagget" },
+      { text: "Булькання кави, яку хтось інший варить для вас.", type: "chiabata" },
+      { text: "Свист чайника, який нагадує, що ви живі.", type: "toast" },
+      { text: "Сміх людей у сусідній кімнаті — не ваш, але приємно.", type: "pampushka" },
+      { text: "Шелест паперу, який ще не зіпсовано ідеями.", type: "focaccia" }
+    ]
+  },
+  {
+    q: "Ви знайшли 500 грн у старій куртці. Що далі?",
+    options: [
+      { text: "Віддаю назад. Це не мої 500 грн, це минулого мене.", type: "borodynsky" },
+      { text: "Купую щось абсолютно непотрібне і неймовірно красиве.", type: "bagget" },
+      { text: "Забуваю в іншій куртці до наступного сезону.", type: "chiabata" },
+      { text: "Відкладаю. Пригодиться. Завжди пригодиться.", type: "toast" },
+      { text: "Веду когось на каву. Бажано того, хто здивується.", type: "pampushka" },
+      { text: "Купую дивну рослину і назву її.", type: "focaccia" }
+    ]
+  },
+  {
+    q: "Вас запросили на вечірку, де ви нікого не знаєте. Ви:",
+    options: [
+      { text: "Приходжу на 40 хвилин пізніше, щоб не бути першим.", type: "bagget" },
+      { text: "Знаходжу кота господарів і проводжу вечір з ним.", type: "chiabata" },
+      { text: "Через годину я вже знаю, у кого алергія на горіхи.", type: "pampushka" },
+      { text: "Стою біля столу з закускою як охоронець. Це моя стихія.", type: "toast" },
+      { text: "Спостерігаю. Потім напишу про це щось довге.", type: "borodynsky" },
+      { text: "Пропоную всім пограти у щось. Це або спрацює, або ні.", type: "focaccia" }
+    ]
+  },
+  {
+    q: "Як ви ставитесь до рослин у вашому домі?",
+    options: [
+      { text: "У нас стосунки на довіру. Вона або живе, або ні.", type: "chiabata" },
+      { text: "Я перевіряю ґрунт пальцем, як у кулінарних шоу.", type: "toast" },
+      { text: "Даю імена. Іноді розмовляю. Нікому не кажіть.", type: "pampushka" },
+      { text: "Купую тільки ті, що виглядають як скульптури.", type: "bagget" },
+      { text: "Усі мої рослини — пам'ять про тих, хто не вижив.", type: "borodynsky" },
+      { text: "У мене їх 23. Я не знаю, коли це почалося.", type: "focaccia" }
+    ]
+  },
+  {
+    q: "Офіціант приніс вам не ту страву. Ваші дії:",
+    options: [
+      { text: "Їм. Всесвіт послав це мені не просто так.", type: "chiabata" },
+      { text: "Ввічливо виправляю з усмішкою дипломата.", type: "toast" },
+      { text: "Кажу, що все добре, але вечір зіпсовано назавжди.", type: "borodynsky" },
+      { text: "Повертаю. У мене є принципи і смакові рецептори.", type: "bagget" },
+      { text: "Запитую офіціанта, чи все в нього сьогодні гаразд.", type: "pampushka" },
+      { text: "Пробую. Може, це знак переглянути все життя.", type: "focaccia" }
+    ]
+  },
+  {
+    q: "Ваш підхід до інструкцій до IKEA:",
+    options: [
+      { text: "Читаю від початку до кінця. Двічі. Потім починаю.", type: "toast" },
+      { text: "Інструкція — це тільки пропозиція.", type: "focaccia" },
+      { text: "Дивлюсь на картинки, як на сучасне мистецтво.", type: "chiabata" },
+      { text: "Роблю сам, потім кличу когось переробити.", type: "bagget" },
+      { text: "Збираю з другом. Без друга — це не меблі, а випробування.", type: "pampushka" },
+      { text: "Зберу через три роки. Коробка поки що — частина інтер'єру.", type: "borodynsky" }
+    ]
+  },
+  {
+    q: "Оберіть ваш ідеальний понеділок:",
+    options: [
+      { text: "Тиша, кава, списки. Багато списків.", type: "toast" },
+      { text: "Щоб ніхто не помітив, що я прийшов.", type: "borodynsky" },
+      { text: "Нова сорочка. Новий тиждень. Новий я (старий, але свіжовипрасуваний).", type: "bagget" },
+      { text: "Понеділок — це відносне поняття. Я встаю коли встаю.", type: "chiabata" },
+      { text: "Зранку всіх обіймаю, навіть тих, хто не просив.", type: "pampushka" },
+      { text: "Несподівана ідея о 07:14, яка зруйнує плани на тиждень.", type: "focaccia" }
+    ]
+  },
+  {
+    q: "Останнє питання (обіцяємо). Що ви робите, коли бачите голуба на вулиці?",
+    options: [
+      { text: "Оцінюю його як художній об'єкт. Іноді фотографую.", type: "bagget" },
+      { text: "Киваю. Ми з ним розуміємо щось таке, про що не треба говорити.", type: "borodynsky" },
+      { text: "Обходжу. Голуб теж людина, має право на особистий простір.", type: "toast" },
+      { text: "Кидаю йому крихту, якщо є. Якщо нема — обіцяю наступного разу.", type: "pampushka" },
+      { text: "Придумую йому ім'я і коротку біографію.", type: "focaccia" },
+      { text: "Не помічаю. Я думаю про одну фразу, яку сказав 2019-го.", type: "chiabata" }
+    ]
+  }
+];
+
+const breads = {
+  bagget: {
+    emoji: "🥖",
+    name: "Багет",
+    description: [
+      "Ти — Багет. Елегантний, стрункий, злегка зарозумілий — і абсолютно впевнений, що знаєш, як треба. Ти надаєш значення дрібницям: правильна сорочка в середу, правильна кава о 10:30, правильна пауза перед відповіддю. Тобі не шкода витратити годину, щоб щось маленьке було ідеальним, і ти щиро не розумієш людей, які вважають це перфекціонізмом — це ж просто базові стандарти.",
+      "Твоя сила — у смаку, витримці й здатності одним поглядом перетворити черговий зум-мітинг на подію. Твоя слабкість — ти черствієш через чотири години, якщо тебе не цінують. Тобі потрібне оточення, яке зрозуміє: бути Багетом — це не статус, це хрест. Усередині ти м'якіший, ніж здаєшся, просто не кожному хочеться це демонструвати. І правильно."
+    ]
+  },
+  chiabata: {
+    emoji: "🫓",
+    name: "Чіабата",
+    description: [
+      "Ти — Чіабата. Повна повітря, дірочок і загадкового спокою. Ти пливеш крізь життя так, ніби хтось інший несе за тебе відповідальність — і дивовижним чином це працює. Люди думають, що ти або геній, або повністю розслаблений — правильна відповідь: і те, й інше одночасно. Ти можеш не зробити нічого за день і все одно мати відчуття, що все під контролем. Бо воно під контролем. Просто під чиїмсь іншим.",
+      "Твій суперсила — вміння не ускладнювати. Там, де інші панікують, ти знаходиш подушку. Там, де інші доводять, ти знизуєш плечима і маєш рацію. Твоя вразливість у тому, що тебе легко не помітити — ти ж не кричиш. Але той, хто скуштує тебе раз, повертається. Бо Чіабати мало не буває — її або дуже хочеться, або дуже не вистачає."
+    ]
+  },
+  borodynsky: {
+    emoji: "🍞",
+    name: "Бородинський",
+    description: [
+      "Ти — Бородинський. Темний, щільний, з присмаком кмину і старої меланхолії. Ти з тих людей, які пам'ятають, хто що сказав на зустрічі 14 березня 2022 року, і знають, чому це досі важливо. Ти не любиш зайвих слів — у тебе й своїх вистачає, просто ти їх мовчиш. Твій гумор настільки сухий, що хтось уже сміється, а ти ще навіть не закінчив думку.",
+      "Ти глибокий не тому, що намагаєшся, а тому, що інакше не вмієш. З тобою не поговориш про погоду — ти одразу зрулиш на тему, чи має сенс літо. І саме тому люди, які тебе люблять, люблять тебе по-справжньому: з Бородинським не буває випадкових стосунків. Твоя слабкість — ти буваєш важкуватим для себе. Пам'ятай: навіть найсерйозніший хліб потребує масла. Не відмовляй собі в ньому."
+    ]
+  },
+  toast: {
+    emoji: "🍞",
+    name: "Тостовий хліб",
+    description: [
+      "Ти — Тостовий хліб. Надійний, передбачуваний, трохи недооцінений — і абсолютно незамінний. Ти та людина, яка приходить на 10 хвилин раніше, має в рюкзаку пластир, запасну ручку і здоровий глузд. Тобі не потрібно бути зіркою вечора — тобі потрібно, щоб вечір взагалі відбувся, і, власне, завдяки тобі він відбувається. Без тебе всі б забули, куди йдуть.",
+      "Іронія в тому, що ти сам себе вважаєш занадто звичайним — а насправді ти той фундамент, на якому тримаються чужі яскраві життя. Тобі дуже личить трохи підсмажитися: коли ти виходиш із зони комфорту, з'являється хрусткий край, аромат і нові можливості. Не бійся бути не просто основою, а головною стравою. Світу і так достатньо багетів, а справжніх тостів — обмаль."
+    ]
+  },
+  pampushka: {
+    emoji: "🥐",
+    name: "Пампушка",
+    description: [
+      "Ти — Пампушка. Тепла, кругла, з часником по краю і сонцем усередині. Ти з тих людей, які на питання \"як справи?\" реально відповідають, і ще питають у відповідь, і слухають. Ти неможливо добрий — і це не слабкість, це твоя ядерна зброя. У твоїй присутності люди починають розказувати речі, які вони не розказували навіть собі. Ти не терапевт. Ти просто пампушка.",
+      "Твоя небезпека — ти віддаєш, поки не залишається. Не кожен, хто прийшов погрітись, прийшов з хорошими намірами, і ти це знаєш, але все одно ставиш чайник. Пам'ятай: борщ без пампушки — це суп, а пампушка без борщу — самодостатній, смачний, любий собі об'єкт. Тобі не треба заслуговувати любов подвигами. Тобі треба просто бути. А решту ти, як завжди, доробиш."
+    ]
+  },
+  focaccia: {
+    emoji: "🫓",
+    name: "Фокача",
+    description: [
+      "Ти — Фокача. Творча, посипана чимось дивним, трохи виставкова — і абсолютно нікому не зобов'язана бути звичайною. Ти та людина, яка перефарбовує стіну о 23:00, бо \"нарешті зрозуміла\". У тебе на кухні є спеція, назву якої ти сама вигадала. Ти починаєш тисячу проєктів, закінчуєш триста — але ті триста такі, що про решту семисот ніхто і не згадує.",
+      "Твоя суперсила — ти бачиш красу там, де інші бачать розетку. Твоя вразливість — ти швидко вигорюєш, бо твій внутрішній вогонь справді вогонь, а не декоративна гірлянда. Тобі треба пам'ятати, що оливкова олія і розмарин — це не розкіш, а паливо. Відпочивай. Навіть фокачу треба іноді просто залишити на рушнику і не чіпати. З неї виходить щось неймовірне саме тоді, коли її не контролюють."
+    ]
+  }
+};
+
+let currentQuestion = 0;
+let scores = { bagget: 0, chiabata: 0, borodynsky: 0, toast: 0, pampushka: 0, focaccia: 0 };
+
+const app = document.getElementById('app');
+
+function renderIntro() {
+  app.innerHTML = `
+    <h1>Який ти хліб?</h1>
+    <div class="subtitle">Серйозний тест. Несерйозні питання.</div>
+    <div class="intro">
+      <p>10 неочікуваних питань. Один чесний результат. Ніякого осуду — тільки борошно, вода і правда про тебе.</p>
+      <p>Відповідай першим інстинктом. Хліб не любить, коли думають занадто довго.</p>
+      <button class="start-btn" onclick="startQuiz()">Почати</button>
+    </div>
+  `;
+}
+
+function startQuiz() {
+  currentQuestion = 0;
+  scores = { bagget: 0, chiabata: 0, borodynsky: 0, toast: 0, pampushka: 0, focaccia: 0 };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQuestion];
+  const progress = (currentQuestion / questions.length) * 100;
+  app.innerHTML = `
+    <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+    <div class="question-number">Питання ${currentQuestion + 1} з ${questions.length}</div>
+    <div class="question">${q.q}</div>
+    <div class="options">
+      ${q.options.map((opt, i) => `<button class="option" onclick="answer('${opt.type}')">${opt.text}</button>`).join('')}
+    </div>
+  `;
+}
+
+function answer(type) {
+  scores[type]++;
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  let winner = Object.keys(scores).reduce((a, b) => scores[a] >= scores[b] ? a : b);
+  const bread = breads[winner];
+  app.innerHTML = `
+    <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+    <div class="result">
+      <div class="bread-emoji">${bread.emoji}</div>
+      <div class="bread-name">Ти — ${bread.name}</div>
+      <div class="bread-description">
+        ${bread.description.map(p => `<p>${p}</p>`).join('')}
+      </div>
+      <button class="restart-btn" onclick="renderIntro()">Пройти ще раз</button>
+    </div>
+  `;
+}
+
+renderIntro();
+</script>
+</body>
+</html>
